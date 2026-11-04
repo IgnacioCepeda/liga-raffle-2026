@@ -58,7 +58,8 @@ const Raffle: NextPage = () => {
     if (!pool.length) return
     const shuffled = [...pool].sort(() => Math.random() - 0.5)
     const selected = shuffled[Math.floor(Math.random() * shuffled.length)]
-    const target = Math.max(20, shuffled.length * 2) + shuffled.indexOf(selected)
+    // Keep the show concise regardless of list size: ~4–5 seconds from start to winner.
+    const target = 26
     let step = 0
     setWinner(null); setRemaining(pool.length); setDrawing(true); setSlow(false)
 
@@ -69,11 +70,11 @@ const Raffle: NextPage = () => {
         setCurrent(selected); setWinner(selected); setDrawing(false); setSlow(false)
         return
       }
-      const slowPoint = Math.floor(target * .68)
+      const slowPoint = Math.floor(target * .62)
       const inFinalPhase = step >= slowPoint
       setSlow(inFinalPhase)
       const progress = inFinalPhase ? (step - slowPoint) / Math.max(1, target - slowPoint) : 0
-      timeoutRef.current = setTimeout(advance, inFinalPhase ? 90 + Math.round(progress * 610) : 65)
+      timeoutRef.current = setTimeout(advance, inFinalPhase ? 120 + Math.round(progress * 500) : 48)
     }
     advance()
   }
