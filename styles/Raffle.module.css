@@ -12,6 +12,21 @@
   background-repeat: no-repeat;
 }
 
+.settingsButton {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 30;
+  background: rgba(5, 31, 2, 0.38);
+  border: 1px solid rgba(255, 255, 255, 0.62);
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+}
+
+.settingsButton button {
+  color: white;
+}
+
 /* overlay */
 .overlay {
   min-height: 100vh;
@@ -54,6 +69,28 @@
     background: #FFFFFF;
     box-shadow: 0px 0px 10px 10px rgba(255, 255, 255, 0.25);
     filter: blur(10px);
+}
+
+.ballSecondary {
+    position: absolute;
+    bottom: -18px;
+    left: 62px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #b7fff3;
+    box-shadow: 0 0 22px 8px rgba(123, 255, 230, .6);
+    filter: blur(5px);
+}
+
+.pulseCircle {
+    border-color: #b7fff3;
+    box-shadow: 0 0 .4rem #fff, inset 0 0 .4rem #fff, 0 0 1.6rem #b7fff3, inset 0 0 1.6rem #12d8ae;
+}
+
+.waveCircle {
+    border-style: dashed;
+    border-width: .28rem;
 }
 
 /* inner circle */
@@ -193,9 +230,9 @@
   padding: 0 40px;
 }
 .logo__container {
-    width: 100px;
+    width: 150px;
     background: none;
-    margin-bottom: -35px;
+    margin-bottom: 0;
 }
 .title {
   background: -webkit-linear-gradient(135deg, rgb(73 151 201 / 50%) 5.73%, rgb(28 166 174 / 80%) 33.09%, rgb(24 188 54 / 80%) 68.37%, rgb(61 237 147 / 50%) 90.02%);
@@ -228,4 +265,75 @@
     bottom: 20px;
     right: 20px;
     width: 150px;
+}
+
+.settingsLabel {
+  color: #174704;
+  font-weight: 700;
+  margin: 8px 0 10px;
+}
+
+.backgroundChoices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.backgroundChoice {
+  aspect-ratio: 16 / 9;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
+}
+
+.selectedChoice {
+  border-color: #12a83d;
+  box-shadow: 0 0 0 2px rgba(18, 168, 61, .23);
+}
+
+.animationChoices {
+  display: grid;
+  gap: 8px;
+}
+
+.animationChoice {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #c9d6c4;
+  border-radius: 8px;
+  background: white;
+  color: #17310d;
+  cursor: pointer;
+  text-align: left;
+}
+
+.animationChoice strong, .animationChoice span {
+  display: block;
+}
+
+.animationChoice span {
+  margin-top: 2px;
+  color: #587050;
+  font-size: .85rem;
+}
+
+.selectedAnimation {
+  border-color: #12a83d;
+  background: #f0faed;
+}
+
+@media (max-width: 700px) {
+  .outer__circle, .outer__circle2 { width: 88vw; height: 88vw; }
+  .circle { width: 60vw; height: 60vw; }
+  .card__container { width: min(72vw, 300px); height: 390px; padding: 20px; }
+  .title__container { padding: 0 16px; }
+  .title { font-size: 22px; text-align: right; }
+  .logo__container { width: 65px; }
+  .actions__container { width: 90vw; bottom: 8px; }
+  .buttons { margin-left: 15px; }
+  .df__logo__container { width: 130px; bottom: 8px; left: 8px; }
+  .settingsButton { top: 12px; right: 12px; }
 }

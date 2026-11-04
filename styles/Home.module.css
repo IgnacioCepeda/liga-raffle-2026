@@ -19,6 +19,19 @@
   background: linear-gradient(rgb(23 71 4 / 75%), rgb(5 31 2 / 75%));
 }
 
+.settingsButton {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 30;
+  background: rgba(5, 31, 2, .38);
+  border: 1px solid rgba(255, 255, 255, .62);
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+}
+
+.settingsButton button { color: white; }
+
 .upload__drop {
   z-index: 10;
   width: 700px;
@@ -97,7 +110,7 @@
   padding: 0 40px;
 }
 .logo__container {
-    width: 100px;
+    width: 150px;
     background: none;
 }
 .title {
@@ -133,4 +146,57 @@
     bottom: 20px;
     right: 20px;
     width: 150px;
+}
+
+.settingsLabel {
+  color: #174704;
+  font-weight: 700;
+  margin: 8px 0 10px;
+}
+
+.backgroundChoices {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.backgroundChoice {
+  aspect-ratio: 16 / 9;
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background-position: center;
+  background-size: cover;
+  cursor: pointer;
+}
+
+.selectedChoice {
+  border-color: #12a83d;
+  box-shadow: 0 0 0 2px rgba(18, 168, 61, .23);
+}
+
+.animationChoices { display: grid; gap: 8px; }
+
+.animationChoice {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #c9d6c4;
+  border-radius: 8px;
+  background: white;
+  color: #17310d;
+  cursor: pointer;
+  text-align: left;
+}
+
+.animationChoice strong, .animationChoice span { display: block; }
+.animationChoice span { margin-top: 2px; color: #587050; font-size: .85rem; }
+.selectedAnimation { border-color: #12a83d; background: #f0faed; }
+
+@media (max-width: 700px) {
+  .title__container { padding: 0 16px; }
+  .title { font-size: 22px; text-align: left; }
+  .logo__container { width: 90px; }
+  .settingsButton { top: 12px; right: 12px; }
+  .upload__drop { width: 82vw; height: 82vw; max-height: 600px; }
+  .title2 { font-size: 34px; }
 }

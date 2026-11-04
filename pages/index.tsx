@@ -1,14 +1,14 @@
 import type { NextPage } from 'next'
 
 /* React */
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 /* Components */
 import Head from 'next/head'
 import Link from 'next/link'
 import FileButton from '../components/FileButton'
 import Image from 'next/image'
-import Logo from '../public/img/inter.jpeg'
+import Logo from '../public/img/logo-intergrupos-2026.jpg'
 import DFLogo from '../public/img/df_logo.png'
 
 /* Redux */
@@ -25,6 +25,15 @@ import FileUploadRoundedIcon from '@mui/icons-material/FileUploadRounded';
 import PersonRoundedIcon from '@mui/icons-material/PersonRounded';
 import Snackbar from '@mui/material/Snackbar';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import Button from '@mui/material/Button';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import UploadRoundedIcon from '@mui/icons-material/UploadRounded';
 
 /* CSS */
 import styles from '../styles/Home.module.css'
@@ -42,6 +51,15 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
+type AnimationStyle = 'orbit' | 'pulse' | 'wave'
+type RaffleSettings = { background: string; animation: AnimationStyle }
+const defaultRaffleSettings: RaffleSettings = { background: '/img/background.png', animation: 'orbit' }
+const animationOptions: Array<{ id: AnimationStyle; name: string; description: string }> = [
+  { id: 'orbit', name: 'Órbita neón', description: 'Versión más fluida y elegante del aro actual.' },
+  { id: 'pulse', name: 'Pulso de sorteo', description: 'El aro respira y acelera para crear suspenso.' },
+  { id: 'wave', name: 'Onda energética', description: 'Movimiento elástico y dinámico para un cierre festivo.' },
+]
+
 
 
 const Home: NextPage = () => {
@@ -58,6 +76,32 @@ const Home: NextPage = () => {
 
   const [number, setNumber] = useState<number>(0);
   const [intervalID, setIntervalID] = useState<number>(0);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [raffleSettings, setRaffleSettings] = useState<RaffleSettings>(defaultRaffleSettings);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('raffleSettings');
+      if (saved) setRaffleSettings({ ...defaultRaffleSettings, ...JSON.parse(saved) });
+    } catch { /* Use the defaults when browser storage is unavailable. */ }
+  }, []);
+
+  const updateRaffleSettings = (change: Partial<RaffleSettings>) => {
+    setRaffleSettings((previous) => {
+      const next = { ...previous, ...change };
+      try { localStorage.setItem('raffleSettings', JSON.stringify(next)); } catch { /* Large uploads still work in this session. */ }
+      return next;
+    });
+  };
+
+  const uploadBackground = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const image = event.target.files?.[0];
+    if (!image || !image.type.startsWith('image/')) return;
+    const reader = new FileReader();
+    reader.onload = () => updateRaffleSettings({ background: String(reader.result) });
+    reader.readAsDataURL(image);
+    event.target.value = '';
+  };
 
    /* Redux */
   const dispatch = useAppDispatch(); //function that allows to trigger actions that update the redux state
@@ -355,8 +399,16 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
+      <main className={styles.main} style={{ backgroundImage: `url("${raffleSettings.background}")` }}>
         <div className={styles.overlay}>
+
+          <div className={styles.settingsButton}>
+            <Tooltip title="Configuración de la rifa" placement="left">
+              <IconButton aria-label="Abrir configuración de la rifa" onClick={() => setSettingsOpen(true)}>
+                <SettingsRoundedIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
 
           {state.step === 0 ? (
                 <div 
@@ -413,10 +465,10 @@ const Home: NextPage = () => {
 
           {/* Logo image */}
           <div className={styles.title__container}>
-              <div className={styles.logo__container}>
-                  <Image src={Logo} width={213} height={200} alt="YCC"/>
-              </div>
               <h1 className={styles.title}>XV TORNEO DE ANIVERSARIO {new Date().getFullYear()}</h1>
+              <div className={styles.logo__container}>
+                  <Image src={Logo} width={150} height={150} alt="Logo Intergrupos 2026"/>
+              </div>
           </div>
 
           {/* DFuture Logo image */}
@@ -435,6 +487,28 @@ const Home: NextPage = () => {
           {state.error}
         </Alert>
       </Snackbar>
+
+      <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} fullWidth maxWidth="sm" aria-labelledby="raffle-settings-title">
+        <DialogTitle id="raffle-settings-title">Configuración de la rifa</DialogTitle>
+        <DialogContent dividers>
+          <p className={styles.settingsLabel}>Fondo de pantalla</p>
+          <div className={styles.backgroundChoices}>
+            {['/img/background.png', '/img/background_2.png', '/img/inter.png'].map((background, index) => (
+              <button key={background} type="button" className={`${styles.backgroundChoice} ${raffleSettings.background === background ? styles.selectedChoice : ''}`} style={{ backgroundImage: `url(${background})` }} onClick={() => updateRaffleSettings({ background })} aria-label={`Elegir fondo ${index + 1}`} />
+            ))}
+          </div>
+          <Button component="label" startIcon={<UploadRoundedIcon />} variant="outlined" size="small">Subir imagen propia<input hidden type="file" accept="image/*" onChange={uploadBackground} /></Button>
+          <p className={styles.settingsLabel}>Animación del sorteo</p>
+          <div className={styles.animationChoices}>
+            {animationOptions.map((option) => (
+              <button key={option.id} type="button" className={`${styles.animationChoice} ${raffleSettings.animation === option.id ? styles.selectedAnimation : ''}`} onClick={() => updateRaffleSettings({ animation: option.id })}>
+                <strong>{option.name}</strong><span>{option.description}</span>
+              </button>
+            ))}
+          </div>
+        </DialogContent>
+        <DialogActions><Button onClick={() => setSettingsOpen(false)} variant="contained">Listo</Button></DialogActions>
+      </Dialog>
     </div>
   )
 }
