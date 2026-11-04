@@ -53,7 +53,7 @@ const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(
 
 type AnimationStyle = 'orbit' | 'pulse' | 'wave'
 type RaffleSettings = { background: string; animation: AnimationStyle }
-const defaultRaffleSettings: RaffleSettings = { background: '/img/background.png', animation: 'orbit' }
+const defaultRaffleSettings: RaffleSettings = { background: '/img/torneo-intergrupos-2026-bienvenida.jpg', animation: 'orbit' }
 const animationOptions: Array<{ id: AnimationStyle; name: string; description: string }> = [
   { id: 'orbit', name: 'Órbita neón', description: 'Versión más fluida y elegante del aro actual.' },
   { id: 'pulse', name: 'Pulso de sorteo', description: 'El aro respira y acelera para crear suspenso.' },
@@ -82,7 +82,14 @@ const Home: NextPage = () => {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('raffleSettings');
-      if (saved) setRaffleSettings({ ...defaultRaffleSettings, ...JSON.parse(saved) });
+      if (saved) {
+        const savedSettings = JSON.parse(saved) as RaffleSettings;
+        // Migrate the former default background while retaining intentional custom choices.
+        const background = savedSettings.background === '/img/background.png'
+          ? defaultRaffleSettings.background
+          : savedSettings.background;
+        setRaffleSettings({ ...defaultRaffleSettings, ...savedSettings, background });
+      }
     } catch { /* Use the defaults when browser storage is unavailable. */ }
   }, []);
 
@@ -465,7 +472,7 @@ const Home: NextPage = () => {
 
           {/* Logo image */}
           <div className={styles.title__container}>
-              <h1 className={styles.title}>XV TORNEO DE ANIVERSARIO {new Date().getFullYear()}</h1>
+              <h1 className={styles.title}>TORNEO INTERGRUPOS 2026</h1>
               <div className={styles.logo__container}>
                   <Image src={Logo} width={150} height={150} alt="Logo Intergrupos 2026"/>
               </div>
@@ -493,7 +500,7 @@ const Home: NextPage = () => {
         <DialogContent dividers>
           <p className={styles.settingsLabel}>Fondo de pantalla</p>
           <div className={styles.backgroundChoices}>
-            {['/img/background.png', '/img/background_2.png', '/img/inter.png'].map((background, index) => (
+            {['/img/torneo-intergrupos-2026-bienvenida.jpg', '/img/background.png', '/img/background_2.png', '/img/inter.png'].map((background, index) => (
               <button key={background} type="button" className={`${styles.backgroundChoice} ${raffleSettings.background === background ? styles.selectedChoice : ''}`} style={{ backgroundImage: `url(${background})` }} onClick={() => updateRaffleSettings({ background })} aria-label={`Elegir fondo ${index + 1}`} />
             ))}
           </div>

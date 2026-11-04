@@ -24,7 +24,7 @@ import { motion } from 'framer-motion'
 type AnimationStyle = 'orbit' | 'pulse' | 'wave'
 type RaffleSettings = { background: string; animation: AnimationStyle }
 
-const defaults: RaffleSettings = { background: '/img/background.png', animation: 'orbit' }
+const defaults: RaffleSettings = { background: '/img/torneo-intergrupos-2026-bienvenida.jpg', animation: 'orbit' }
 const animations: Array<{ id: AnimationStyle; name: string; description: string }> = [
   { id: 'orbit', name: 'Órbita neón', description: 'Versión más fluida y elegante del aro actual.' },
   { id: 'pulse', name: 'Pulso de sorteo', description: 'El aro respira y acelera para crear suspenso.' },
@@ -81,7 +81,11 @@ const Raffle: NextPage = () => {
   useEffect(() => {
     try {
       const saved = localStorage.getItem('raffleSettings')
-      if (saved) setSettings({ ...defaults, ...JSON.parse(saved) })
+      if (saved) {
+        const savedSettings = JSON.parse(saved) as RaffleSettings
+        const background = savedSettings.background === '/img/background.png' ? defaults.background : savedSettings.background
+        setSettings({ ...defaults, ...savedSettings, background })
+      }
     } catch { /* Use defaults if storage is unavailable. */ }
   }, [])
 
@@ -157,7 +161,7 @@ const Raffle: NextPage = () => {
     </main>
     <Dialog open={settingsOpen} onClose={() => setSettingsOpen(false)} fullWidth maxWidth="sm" aria-labelledby="raffle-settings-title">
       <DialogTitle id="raffle-settings-title">Configuración de la rifa</DialogTitle><DialogContent dividers>
-        <p className={styles.settingsLabel}>Fondo de pantalla</p><div className={styles.backgroundChoices}>{['/img/background.png', '/img/background_2.png', '/img/inter.png'].map((background, index) => <button key={background} type="button" className={`${styles.backgroundChoice} ${settings.background === background ? styles.selectedChoice : ''}`} style={{ backgroundImage: `url(${background})` }} onClick={() => updateSettings({ background })} aria-label={`Elegir fondo ${index + 1}`} />)}</div>
+        <p className={styles.settingsLabel}>Fondo de pantalla</p><div className={styles.backgroundChoices}>{['/img/torneo-intergrupos-2026-bienvenida.jpg', '/img/background.png', '/img/background_2.png', '/img/inter.png'].map((background, index) => <button key={background} type="button" className={`${styles.backgroundChoice} ${settings.background === background ? styles.selectedChoice : ''}`} style={{ backgroundImage: `url(${background})` }} onClick={() => updateSettings({ background })} aria-label={`Elegir fondo ${index + 1}`} />)}</div>
         <Button component="label" startIcon={<UploadRoundedIcon />} variant="outlined" size="small">Subir imagen propia<input hidden type="file" accept="image/*" onChange={uploadBackground} /></Button>
         <p className={styles.settingsLabel}>Animación del sorteo</p><div className={styles.animationChoices}>{animations.map((option) => <button key={option.id} type="button" className={`${styles.animationChoice} ${settings.animation === option.id ? styles.selectedAnimation : ''}`} onClick={() => updateSettings({ animation: option.id })}><strong>{option.name}</strong><span>{option.description}</span></button>)}</div>
       </DialogContent><DialogActions><Button onClick={() => setSettingsOpen(false)} variant="contained">Listo</Button></DialogActions>
