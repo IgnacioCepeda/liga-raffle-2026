@@ -484,6 +484,8 @@ const Home: NextPage = () => {
               <Image src={DFLogo} width={500} height={160} alt="DFuture" objectFit='contain'/>
           </div>
 
+          <Link href="/presentation" className={styles.presentationLink}>Presentación de bienvenida</Link>
+
         </div>
       </main>
 

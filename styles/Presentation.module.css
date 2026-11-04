@@ -1,0 +1,42 @@
+.main {
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding: 42px 6vw;
+  color: #f7fff5;
+  background: linear-gradient(135deg, #062615, #0a5030 55%, #a47620);
+}
+
+.back { color: white; font-weight: 700; text-decoration: none; }
+.panel { max-width: 1100px; margin: 46px auto 0; }
+.eyebrow { margin: 0; color: #eec85e; font-size: .8rem; font-weight: 800; letter-spacing: .14em; }
+.panel h1 { margin: 8px 0; font-size: clamp(2rem, 5vw, 4rem); }
+.description { max-width: 720px; color: rgba(255,255,255,.82); line-height: 1.6; }
+.controls { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; margin: 32px 0; }
+.uploadButton, .startButton { border: 0; border-radius: 8px; padding: 13px 18px; font: inherit; font-weight: 800; cursor: pointer; }
+.uploadButton { color: #063119; background: #eec85e; }
+.uploadButton input { display: none; }
+.duration { display: flex; gap: 8px; align-items: center; font-weight: 700; }
+.duration select { border: 1px solid #9ed8b4; border-radius: 6px; padding: 10px; font: inherit; }
+.startButton { color: #fff; background: #159447; }
+.startButton:disabled { cursor: not-allowed; opacity: .45; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 15px; }
+.thumbnail { position: relative; overflow: hidden; min-height: 155px; border-radius: 10px; background: #092919; }
+.thumbnail img { width: 100%; height: 155px; display: block; object-fit: cover; }
+.thumbnail span { display: block; overflow: hidden; padding: 8px; color: #fff; font-size: .75rem; text-overflow: ellipsis; white-space: nowrap; }
+.thumbnail button { position: absolute; top: 7px; right: 7px; width: 30px; height: 30px; border: 0; border-radius: 50%; color: #fff; background: rgba(0,0,0,.7); cursor: pointer; font-size: 22px; line-height: 1; }
+.empty { border: 1px dashed rgba(255,255,255,.5); border-radius: 12px; padding: 70px 20px; color: rgba(255,255,255,.75); text-align: center; }
+.player { width: 100vw; height: 100vh; overflow: hidden; background: #000; cursor: pointer; }
+.slide { width: 100%; height: 100%; object-fit: contain; animation-duration: 850ms; animation-timing-function: ease-out; }
+.fade { animation-name: fade; }
+.zoom { animation-name: zoom; }
+.slideLeft { animation-name: slideLeft; }
+.slideUp { animation-name: slideUp; }
+.playerBar { position: fixed; right: 20px; bottom: 20px; display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 9px; color: #fff; background: rgba(0,0,0,.58); cursor: default; opacity: .15; transition: opacity .2s; }
+.playerBar:hover { opacity: 1; }
+.playerBar button { border: 1px solid rgba(255,255,255,.5); border-radius: 5px; padding: 6px 10px; color: #fff; background: transparent; cursor: pointer; }
+.playerHint { position: fixed; bottom: 8px; width: 100%; color: rgba(255,255,255,.5); font-size: .75rem; text-align: center; }
+@keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes zoom { from { opacity: .1; transform: scale(1.08); } to { opacity: 1; transform: scale(1); } }
+@keyframes slideLeft { from { opacity: .2; transform: translateX(8%); } to { opacity: 1; transform: translateX(0); } }
+@keyframes slideUp { from { opacity: .2; transform: translateY(8%); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 600px) { .main { padding: 25px 20px; } .duration { width: 100%; } .playerBar { opacity: .8; } }

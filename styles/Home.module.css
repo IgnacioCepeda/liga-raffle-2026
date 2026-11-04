@@ -139,6 +139,21 @@
   margin-bottom: 5px;
 }
 
+.presentationLink {
+  position: absolute;
+  right: 24px;
+  bottom: 28px;
+  z-index: 15;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 7px;
+  padding: 9px 12px;
+  color: white;
+  font-size: .85rem;
+  font-weight: 700;
+  text-decoration: none;
+  background: rgba(5, 31, 2, .5);
+}
+
 
 /* urent logo */
 .urent__logo__container {
@@ -197,6 +212,7 @@
   .title { font-size: 22px; text-align: left; }
   .logo__container { width: 90px; }
   .settingsButton { top: 12px; right: 12px; }
+  .presentationLink { right: 10px; bottom: 10px; }
   .upload__drop { width: 82vw; height: 82vw; max-height: 600px; }
   .title2 { font-size: 34px; }
 }

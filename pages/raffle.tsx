@@ -147,7 +147,7 @@ const Raffle: NextPage = () => {
           {winner && <h2 className={styles.winner__title}>¡Ganador!</h2>}
           <h1 className={styles.name}>{current?.nombre?.toUpperCase() || 'PREPARANDO...'}</h1>
           <p className={styles.nickname}>{current ? `(${current.apodo})` : 'La rifa está por comenzar'}</p>
-          {winner && <div className={styles.facts}><div><h2 className={styles.equipo}>{winner.equipo}</h2><p className={styles.equipo2}>EQUIPO</p></div><div><h2 className={styles.handi}>{winner.handicap}</h2><p className={styles.handi2}>HANDI</p></div></div>}
+          {winner && <p className={styles.winnerTeam}>{winner.equipo}</p>}
         </div></div>
         <div className={styles.actions__container}><div className={styles.icon__container}><PersonRoundedIcon className={styles.person__icon} /><p className={styles.participants}>{remaining || '--'}/{participants.length || '--'}</p></div>
           {winner && <div className={styles.buttons}>
