@@ -485,6 +485,7 @@ const Home: NextPage = () => {
           </div>
 
           <Link href="/presentation" className={styles.presentationLink}>Presentación de bienvenida</Link>
+          <Link href="/scores" className={styles.scoresLink}>Captura de scores</Link>
 
         </div>
       </main>
