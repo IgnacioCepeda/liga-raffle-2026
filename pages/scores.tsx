@@ -103,7 +103,6 @@ const Scores: NextPage = () => {
         <div className={styles.eventTitle}><p>CEREMONIA DE PREMIACIÓN</p><h1>Torneo Intergrupos <strong>2026</strong></h1><span>Consola oficial de scores</span></div>
         <div className={`${styles.logoFrame} ${styles.clubLogo}`}><Image src="/img/branding/logo-ycc.jpg" alt="Yucatán Country Club" width={128} height={82} priority /></div>
       </div>
-      <span className={styles.progressSummary}>{completeTeams}/{teams.length} equipos completos</span>
     </header>
     <nav className={styles.tabs}><button className={view === 'setup' ? styles.selected : ''} onClick={() => setView('setup')}>1. Configuración</button><button className={view === 'capture' ? styles.selected : ''} onClick={() => setView('capture')}>2. Ceremonia</button><button className={view === 'results' ? styles.selected : ''} onClick={() => setView('results')}>3. Resultados</button></nav>
     {notice && <div className={styles.notice}>{notice}</div>}

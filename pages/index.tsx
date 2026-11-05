@@ -9,11 +9,13 @@ const Home: NextPage = () => <main className={styles.main}>
   <Image className={styles.background} src="/img/imagen-bienvenida.jpg" alt="Bienvenida al Torneo Intergrupos 2026" layout="fill" priority sizes="100vw" />
   <div className={styles.shade} />
   <header className={styles.header}>
-    <div className={styles.brand}><Image src="/img/branding/logo-intergrupos-2026.jpg" alt="Intergrupos 2026" width={64} height={64} /><div><span>YUCATÁN COUNTRY CLUB</span><strong>Torneo Intergrupos 2026</strong></div></div>
+    <div className={styles.brand}>
+      <Image className={styles.tournamentLogo} src="/img/branding/logo-intergrupos-2026.jpg" alt="Intergrupos 2026" width={72} height={72} />
+      <div className={styles.brandText}><span>YUCATÁN COUNTRY CLUB</span><strong>Torneo Intergrupos 2026</strong></div>
+      <div className={styles.clubMark}><Image src="/img/branding/logo-ycc.jpg" alt="Yucatán Country Club" width={104} height={66} /></div>
+    </div>
     <AppMenu />
   </header>
-  <section className={styles.hero}><p>BIENVENIDOS</p><h1>Torneo<br /><em>Intergrupos</em> 2026</h1><span>Selecciona una opción en el menú para comenzar.</span></section>
-  <footer className={styles.footer}><Image src="/img/branding/logo-ycc.jpg" alt="Yucatán Country Club" width={110} height={70} /></footer>
 </main>
 
 export default Home
