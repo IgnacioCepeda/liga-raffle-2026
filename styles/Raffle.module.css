@@ -27,6 +27,24 @@
   color: white;
 }
 
+.homeButton {
+  position: absolute;
+  z-index: 31;
+  top: 20px;
+  left: 24px;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, .65);
+  border-radius: 50%;
+  background: rgba(5, 31, 2, .45);
+  font-size: 1.45rem;
+  font-weight: 800;
+  backdrop-filter: blur(8px);
+}
+
 /* overlay */
 .overlay {
   min-height: 100vh;
@@ -345,4 +363,5 @@
   .buttons { margin-left: 15px; }
   .df__logo__container { width: 130px; bottom: 8px; left: 8px; }
   .settingsButton { top: 12px; right: 12px; }
+  .homeButton { top: 12px; left: 12px; }
 }
