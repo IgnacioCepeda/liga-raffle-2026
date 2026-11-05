@@ -1,8 +1,8 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/router'
+import AppMenu from '../components/AppMenu'
 import React, { useEffect, useMemo, useState } from 'react'
 import Papa from 'papaparse'
 import styles from '../styles/Scores.module.css'
@@ -97,7 +97,7 @@ const Scores: NextPage = () => {
   return <main className={styles.page}>
     <Head><title>Ceremonia de Scores · Intergrupos 2026</title></Head>
     <header className={styles.header}>
-      <Link href="/" className={styles.back} aria-label="Volver al menú principal">⌂ Menú</Link>
+      <AppMenu />
       <div className={styles.eventBrand}>
         <div className={styles.logoFrame}><Image src="/img/branding/logo-intergrupos-2026.jpg" alt="Logo Torneo Intergrupos 2026" width={92} height={92} priority /></div>
         <div className={styles.eventTitle}><p>CEREMONIA DE PREMIACIÓN</p><h1>Torneo Intergrupos <strong>2026</strong></h1><span>Consola oficial de scores</span></div>

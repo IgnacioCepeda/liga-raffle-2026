@@ -20,6 +20,7 @@ import PersonRoundedIcon from '@mui/icons-material/PersonRounded'
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded'
 import UploadRoundedIcon from '@mui/icons-material/UploadRounded'
 import { motion } from 'framer-motion'
+import AppMenu from '../components/AppMenu'
 
 type AnimationStyle = 'orbit' | 'pulse' | 'wave'
 type RaffleSettings = { background: string; animation: AnimationStyle }
@@ -138,7 +139,7 @@ const Raffle: NextPage = () => {
     <Head><title>Rifa · Torneo Intergrupos</title><meta name="description" content="Rifa del Torneo Intergrupos" /><link rel="icon" href="/favicon.ico" /></Head>
     <main className={styles.main} style={{ backgroundImage: `url("${settings.background}")` }}>
       <div className={styles.overlay}>
-        <Link href="/" className={styles.homeButton} aria-label="Volver al menú principal">⌂</Link>
+        <AppMenu />
         <div className={styles.settingsButton}><Tooltip title="Configuración" placement="left"><IconButton aria-label="Abrir configuración de la rifa" onClick={() => setSettingsOpen(true)}><SettingsRoundedIcon /></IconButton></Tooltip></div>
         <motion.div className={`${styles.outer__circle} ${settings.animation === 'pulse' ? styles.pulseCircle : ''} ${settings.animation === 'wave' ? styles.waveCircle : ''}`} animate={movement} transition={{ duration: slow ? 2.8 : .62, repeat: drawing ? Infinity : 0, ease: slow ? 'easeOut' : 'linear' }}>
           <div className={styles.ball} />{settings.animation !== 'orbit' && <div className={styles.ballSecondary} />}

@@ -14,7 +14,7 @@
 
 .settingsButton {
   position: absolute;
-  top: 20px;
+  bottom: 24px;
   right: 24px;
   z-index: 30;
   background: rgba(5, 31, 2, 0.38);
@@ -27,23 +27,6 @@
   color: white;
 }
 
-.homeButton {
-  position: absolute;
-  z-index: 31;
-  top: 20px;
-  left: 24px;
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  color: white;
-  border: 1px solid rgba(255, 255, 255, .65);
-  border-radius: 50%;
-  background: rgba(5, 31, 2, .45);
-  font-size: 1.45rem;
-  font-weight: 800;
-  backdrop-filter: blur(8px);
-}
 
 /* overlay */
 .overlay {
@@ -250,18 +233,23 @@
   position: absolute;
   top: 10px;
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row;
-  padding: 0 40px;
+  height: 150px;
 }
 .logo__container {
-    width: 150px;
-    background: none;
-    margin-bottom: 0;
+  position: absolute;
+  top: 0;
+  left: 40px;
+  width: 150px;
+  background: none;
 }
 .title {
+  position: absolute;
+  top: 34px;
+  left: 50%;
+  width: max-content;
+  margin: 0;
+  transform: translateX(-50%);
+  text-align: center;
   background: -webkit-linear-gradient(135deg, rgb(73 151 201 / 50%) 5.73%, rgb(28 166 174 / 80%) 33.09%, rgb(24 188 54 / 80%) 68.37%, rgb(61 237 147 / 50%) 90.02%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -356,12 +344,11 @@
   .outer__circle, .outer__circle2 { width: 88vw; height: 88vw; }
   .circle { width: 60vw; height: 60vw; }
   .card__container { width: min(72vw, 300px); height: 390px; padding: 20px; }
-  .title__container { padding: 0 16px; }
-  .title { font-size: 22px; text-align: right; }
-  .logo__container { width: 65px; }
+  .title__container { height: 90px; }
+  .title { top: 23px; font-size: 22px; text-align: center; }
+  .logo__container { top: 4px; left: 15px; width: 65px; }
   .actions__container { width: 90vw; bottom: 8px; }
   .buttons { margin-left: 15px; }
   .df__logo__container { width: 130px; bottom: 8px; left: 8px; }
-  .settingsButton { top: 12px; right: 12px; }
-  .homeButton { top: 12px; left: 12px; }
+  .settingsButton { bottom: 12px; right: 12px; }
 }

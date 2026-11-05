@@ -1,9 +1,9 @@
 /* eslint-disable @next/next/no-img-element -- selected local files use browser blob URLs. */
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
 import React, { useEffect, useRef, useState } from 'react'
 import styles from '../styles/Presentation.module.css'
+import AppMenu from '../components/AppMenu'
 
 type Slide = { id: string; name: string; url: string }
 const effects = ['fade', 'zoom', 'slideLeft', 'slideUp'] as const
@@ -95,7 +95,7 @@ const Presentation: NextPage = () => {
 
   return <main className={styles.main}>
     <Head><title>Presentación · Torneo Intergrupos 2026</title></Head>
-    <Link href="/" className={styles.back}>← Volver a la rifa</Link>
+    <AppMenu />
     <section className={styles.panel}>
       <p className={styles.eyebrow}>TORNEO INTERGRUPOS 2026</p>
       <h1>Presentación de bienvenida</h1>
