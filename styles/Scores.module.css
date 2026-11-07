@@ -52,7 +52,7 @@
 .scoreHead{min-height:54px;color:#c5d3c0;font-size:clamp(.9rem,1.1vw,1.1rem);font-weight:900}
 .scoreRow{min-height:78px;border-top:1px solid #38563e;color:#e4ecdf;font-size:clamp(1.15rem,1.6vw,1.48rem);font-weight:800}
 .scoreRow>span{display:flex;gap:8px;align-items:center}
-.scoreRow input{width:112px;justify-self:center;padding:13px;border:2px solid #758e74;border-radius:8px;text-align:center;font:800 2.05rem inherit}
+.scoreRow input{width:140px;justify-self:center;padding:14px;border:2px solid #758e74;border-radius:8px;text-align:center;font-size:clamp(2.7rem,4vw,3.6rem);font-weight:900;line-height:1;font-family:inherit}
 .scoreRow input:focus{border-color:#e0bf5d;box-shadow:0 0 0 3px #d8b95244}
 .scoreRow>b,.scoreRow>strong{text-align:center}
 .scoreRow>b{font-size:clamp(1.3rem,1.8vw,1.7rem)}
@@ -108,10 +108,10 @@ to{opacity:1;transform:scale(1) rotate(0)}
 .ceremony{grid-template-columns:1fr;margin:18px 0;padding:0 12px}
 .teamList{display:flex;max-height:none;overflow-x:auto}
 .teamList button{display:block;flex:0 0 135px}
-.scoreHead,.scoreRow{grid-template-columns:minmax(125px,1fr) 60px 50px 58px;gap:3px}
+.scoreHead,.scoreRow{grid-template-columns:minmax(105px,1fr) 118px 65px 72px;gap:4px}
 .scoreHead{font-size:.55rem}
 .scoreRow{font-size:.76rem}
-.scoreRow input{width:66px;padding:9px;font-size:1.2rem}
+.scoreRow input{width:100px;padding:12px;font-size:2rem}
 .scoreRow>b{font-size:.9rem}
 .scoreRow>strong{font-size:1rem}
 .scoreRow em{display:none}
