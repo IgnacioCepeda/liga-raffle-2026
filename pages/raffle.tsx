@@ -27,6 +27,7 @@ type RaffleSettings = { background: string; animation: AnimationStyle }
 const PARTICIPANTS_KEY = 'intergruposRaffleParticipants'
 const DELETED_NAMES_KEY = 'deletedNames'
 const RAFFLE_SESSION_KEY = 'intergruposRaffleSession'
+const LAST_WINNER_KEY = 'intergruposRaffleLastWinner'
 
 const defaults: RaffleSettings = { background: '/img/torneo-intergrupos-2026-bienvenida.jpg', animation: 'orbit' }
 const animations: Array<{ id: AnimationStyle; name: string; description: string }> = [
@@ -81,6 +82,7 @@ const Raffle: NextPage = () => {
   const runRaffle = (pool = eligible()) => {
     stop()
     if (!pool.length) return
+    localStorage.removeItem(LAST_WINNER_KEY)
     const shuffled = [...pool].sort(() => Math.random() - 0.5)
     const selected = shuffled[Math.floor(Math.random() * shuffled.length)]
     // Keep the show concise regardless of list size: ~4–5 seconds from start to winner.
@@ -94,6 +96,7 @@ const Raffle: NextPage = () => {
       step += 1
       if (step > target) {
         setCurrent(selected); setWinner(selected); setDrawing(false); setSlow(false)
+        localStorage.setItem(LAST_WINNER_KEY, JSON.stringify(selected))
         return
       }
       const slowPoint = Math.floor(target * .62)
@@ -130,7 +133,15 @@ const Raffle: NextPage = () => {
         setRemaining(participants.length)
         runRaffle(participants)
       } else {
-        setRemaining(eligible().length)
+        const remainingParticipants = eligible()
+        setRemaining(remainingParticipants.length)
+        try {
+          const savedWinner = JSON.parse(localStorage.getItem(LAST_WINNER_KEY) || 'null') as Participant | null
+          if (savedWinner && participants.some((participant) => participant.nombre === savedWinner.nombre)) {
+            setCurrent(savedWinner)
+            setWinner(savedWinner)
+          }
+        } catch { /* A missing or malformed prior state simply resumes without a winner. */ }
       }
     }
     return stop

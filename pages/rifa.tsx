@@ -14,6 +14,7 @@ type CsvParticipant = { nombre?: string; equipo?: string; apodo?: string; handic
 const PARTICIPANTS_KEY = 'intergruposRaffleParticipants'
 const DELETED_NAMES_KEY = 'deletedNames'
 const RAFFLE_SESSION_KEY = 'intergruposRaffleSession'
+const LAST_WINNER_KEY = 'intergruposRaffleLastWinner'
 
 const Rifa: NextPage = () => {
   const router = useRouter()
@@ -55,6 +56,7 @@ const Rifa: NextPage = () => {
       localStorage.setItem(PARTICIPANTS_KEY, JSON.stringify(valid))
       localStorage.setItem(DELETED_NAMES_KEY, JSON.stringify([]))
       localStorage.removeItem(RAFFLE_SESSION_KEY)
+      localStorage.removeItem(LAST_WINNER_KEY)
       setParticipants(valid)
       setMessage(`${valid.length} participantes cargados correctamente.`)
     }, error: () => setMessage('No se pudo leer el archivo CSV.') })
@@ -66,6 +68,7 @@ const Rifa: NextPage = () => {
     localStorage.removeItem(PARTICIPANTS_KEY)
     localStorage.removeItem(DELETED_NAMES_KEY)
     localStorage.removeItem(RAFFLE_SESSION_KEY)
+    localStorage.removeItem(LAST_WINNER_KEY)
     dispatch(setReduxParticipants([]))
     setParticipants([])
     setMessage('Rifa reiniciada. Selecciona el nuevo archivo CSV oficial.')
