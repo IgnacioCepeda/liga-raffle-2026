@@ -8,11 +8,18 @@ import Papa from 'papaparse'
 import styles from '../styles/Scores.module.css'
 
 const STORAGE_KEY = 'intergrupos-2026-ceremony'
-type Player = { id: string; name: string; phcp: number; gross: string }
+type Player = { id: string; name: string; phcp: number; gross: string; sortSurname?: string }
 type Team = { id: string; name: string; averageHcpi: string; players: Player[]; presented: boolean }
 const templateTeams = (): Team[] => Array.from({ length: 15 }, (_, teamNumber) => ({ id: `team-${teamNumber + 1}`, name: `Equipo ${String(teamNumber + 1).padStart(2, '0')}`, averageHcpi: '', presented: false, players: Array.from({ length: 12 }, (_, playerNumber) => ({ id: `${teamNumber}-${playerNumber}`, name: `Jugador ${playerNumber + 1}`, phcp: 0, gross: '' })) }))
 const playerNet = (player: Player) => player.gross === '' ? null : Number(player.gross) - player.phcp
-const surname = (name: string) => name.trim().split(/\s+/).slice(-1)[0] || name
+const surnameParticles = new Set(['de', 'del', 'la', 'las', 'los', 'y'])
+const surname = (name: string) => {
+  const words = name.trim().split(/\s+/).filter(Boolean)
+  if (words.length < 3) return words[words.length - 1] || name
+  let start = words.length - 2
+  while (start > 0 && surnameParticles.has(words[start - 1].toLocaleLowerCase('es'))) start -= 1
+  return words.slice(start, words.length - 1).join(' ')
+}
 const sumNet = (team: Team) => team.players.reduce((sum, player) => sum + (playerNet(player) ?? 0), 0)
 const complete = (team: Team) => team.players.length === 12 && team.players.every((player) => player.gross !== '')
 const normalizedTeamName = (name: string) => name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
@@ -79,10 +86,10 @@ const Scores: NextPage = () => {
   const save = () => { localStorage.setItem(STORAGE_KEY, JSON.stringify(teams)); showNotice('Cambios guardados en esta computadora') }
   const importCsv = (file: File) => Papa.parse<Record<string, string>>(file, { header: true, skipEmptyLines: true, complete: ({ data }) => {
     const columns = Object.keys(data[0] || {}).reduce<Record<string, string>>((map, key) => ({ ...map, [key.toLowerCase().trim()]: key }), {})
-    const nameKey = columns.nombre || columns.jugador || columns.player || columns.name; const teamKey = columns.equipo || columns.team; const phcpKey = columns.phcp || columns['playing handicap'] || columns.handicap || columns.hcp
+    const nameKey = columns.nombre || columns.jugador || columns.player || columns.name; const teamKey = columns.equipo || columns.team; const phcpKey = columns.phcp || columns['playing handicap'] || columns.handicap || columns.hcp; const surnameKey = columns.apellido || columns['apellido paterno'] || columns.paterno
     if (!nameKey || !teamKey || !phcpKey) { showNotice('El CSV debe incluir: nombre, equipo y PHCP.'); return }
     const grouped = new Map<string, Player[]>()
-    data.forEach((row, index) => { const teamName = row[teamKey]?.trim(); const name = row[nameKey]?.trim(); if (!teamName || !name) return; const players = grouped.get(teamName) || []; players.push({ id: `${teamName}-${index}`, name, phcp: Number(row[phcpKey]) || 0, gross: '' }); grouped.set(teamName, players) })
+    data.forEach((row, index) => { const teamName = row[teamKey]?.trim(); const name = row[nameKey]?.trim(); if (!teamName || !name) return; const players = grouped.get(teamName) || []; players.push({ id: `${teamName}-${index}`, name, phcp: Number(row[phcpKey]) || 0, gross: '', sortSurname: surnameKey ? row[surnameKey]?.trim() : undefined }); grouped.set(teamName, players) })
     const imported = Array.from(grouped, ([name, players], index): Team => ({ id: `import-${index}`, name, averageHcpi: '', players, presented: false }))
     if (!imported.length) { showNotice('No encontré jugadores válidos en el CSV.'); return }
     setTeams(imported); setActiveId(imported[0].id); showNotice(`${imported.length} equipos importados. Configura su HCPI promedio.`)
@@ -96,7 +103,10 @@ const Scores: NextPage = () => {
     setEntryMessage(`✓ ${player.name}: bruto ${draft} − PHCP ${player.phcp} = neto ${Number(draft) - player.phcp}`)
     document.querySelector<HTMLInputElement>(`[data-score-position="${position + 1}"]`)?.focus()
   }
-  const sortedPlayers = [...active.players].sort((a, b) => surname(a.name).localeCompare(surname(b.name), 'es'))
+  const sortedPlayers = [...active.players].sort((a, b) => {
+    const bySurname = (a.sortSurname || surname(a.name)).localeCompare(b.sortSurname || surname(b.name), 'es')
+    return bySurname || a.name.localeCompare(b.name, 'es')
+  })
   const lowestNet = Math.min(...active.players.map(playerNet).filter((value): value is number => value !== null))
   const ranking = useMemo(() => [...teams].filter(complete).sort((a, b) => {
     if (sumNet(a) !== sumNet(b)) return sumNet(a) - sumNet(b)
