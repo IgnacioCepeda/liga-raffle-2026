@@ -24,6 +24,9 @@ import AppMenu from '../components/AppMenu'
 
 type AnimationStyle = 'orbit' | 'pulse' | 'wave'
 type RaffleSettings = { background: string; animation: AnimationStyle }
+const PARTICIPANTS_KEY = 'intergruposRaffleParticipants'
+const DELETED_NAMES_KEY = 'deletedNames'
+const RAFFLE_SESSION_KEY = 'intergruposRaffleSession'
 
 const defaults: RaffleSettings = { background: '/img/torneo-intergrupos-2026-bienvenida.jpg', animation: 'orbit' }
 const animations: Array<{ id: AnimationStyle; name: string; description: string }> = [
@@ -33,7 +36,9 @@ const animations: Array<{ id: AnimationStyle; name: string; description: string 
 ]
 
 const Raffle: NextPage = () => {
-  const participants = useAppSelector(selectParticipants) as Participant[]
+  const reduxParticipants = useAppSelector(selectParticipants) as Participant[]
+  const [savedParticipants, setSavedParticipants] = useState<Participant[]>([])
+  const participants = reduxParticipants.length ? reduxParticipants : savedParticipants
   const [winner, setWinner] = useState<Participant | null>(null)
   const [current, setCurrent] = useState<Participant | null>(null)
   const [remaining, setRemaining] = useState(0)
@@ -50,7 +55,7 @@ const Raffle: NextPage = () => {
   }
 
   const eligible = () => {
-    const deleted = JSON.parse(localStorage.getItem('deletedNames') || '[]') as string[]
+    const deleted = JSON.parse(localStorage.getItem(DELETED_NAMES_KEY) || '[]') as string[]
     return participants.filter((participant) => !deleted.includes(participant.nombre))
   }
 
@@ -81,6 +86,10 @@ const Raffle: NextPage = () => {
   }
 
   useEffect(() => {
+    try { setSavedParticipants(JSON.parse(localStorage.getItem(PARTICIPANTS_KEY) || '[]') as Participant[]) } catch { setSavedParticipants([]) }
+  }, [])
+
+  useEffect(() => {
     try {
       const saved = localStorage.getItem('raffleSettings')
       if (saved) {
@@ -94,9 +103,15 @@ const Raffle: NextPage = () => {
   useEffect(() => {
     if (participants.length && !startedRef.current) {
       startedRef.current = true
-      localStorage.setItem('deletedNames', JSON.stringify([]))
-      setRemaining(participants.length)
-      runRaffle(participants)
+      const hasStarted = localStorage.getItem(RAFFLE_SESSION_KEY) === 'true'
+      if (!hasStarted) {
+        localStorage.setItem(DELETED_NAMES_KEY, JSON.stringify([]))
+        localStorage.setItem(RAFFLE_SESSION_KEY, 'true')
+        setRemaining(participants.length)
+        runRaffle(participants)
+      } else {
+        setRemaining(eligible().length)
+      }
     }
     return stop
     // The source file populates the Redux store after navigating here.
@@ -122,13 +137,13 @@ const Raffle: NextPage = () => {
 
   const replayWithoutWinner = () => {
     if (!winner) return
-    const deleted = JSON.parse(localStorage.getItem('deletedNames') || '[]') as string[]
+    const deleted = JSON.parse(localStorage.getItem(DELETED_NAMES_KEY) || '[]') as string[]
     const nextDeleted = Array.from(new Set(deleted.concat(winner.nombre)))
-    localStorage.setItem('deletedNames', JSON.stringify(nextDeleted))
+    localStorage.setItem(DELETED_NAMES_KEY, JSON.stringify(nextDeleted))
     const pool = participants.filter((participant) => !nextDeleted.includes(participant.nombre))
     setRemaining(pool.length); runRaffle(pool)
   }
-  const replayAll = () => { localStorage.setItem('deletedNames', JSON.stringify([])); setRemaining(participants.length); runRaffle(participants) }
+  const replayAll = () => { localStorage.setItem(DELETED_NAMES_KEY, JSON.stringify([])); setRemaining(participants.length); runRaffle(participants) }
 
   const movement = !drawing ? { rotate: 0, scale: 1, y: 0 }
     : settings.animation === 'pulse' ? { rotate: slow ? [0, 90, 180] : [0, 360], scale: slow ? [1, 1.1, 1] : [1, 1.055, 1] }
