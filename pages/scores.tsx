@@ -80,6 +80,10 @@ const Scores: NextPage = () => {
   useEffect(() => { try { const saved = localStorage.getItem(STORAGE_KEY); if (saved) setTeams(JSON.parse(saved) as Team[]) } catch { /* Use the template. */ } finally { setHydrated(true) } }, [])
   useEffect(() => { if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(teams)) }, [teams, hydrated])
   const active = teams.find((team) => team.id === activeId) || teams[0]
+  useEffect(() => {
+    setScoreDrafts({})
+    setEntryMessage(`Captura los scores de ${active.name}. Teclea el score bruto y presiona Enter para confirmar el neto.`)
+  }, [activeId, active.name])
   const completeTeams = teams.filter(complete).length
   const updateTeam = (id: string, change: (team: Team) => Team) => setTeams((current) => current.map((team) => team.id === id ? change(team) : team))
   const showNotice = (message: string) => { setNotice(message); window.setTimeout(() => setNotice(''), 3000) }
