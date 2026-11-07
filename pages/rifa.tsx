@@ -1,6 +1,6 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
-import Link from 'next/link'
+import { useRouter } from 'next/router'
 import React, { useState } from 'react'
 import Papa from 'papaparse'
 import AppMenu from '../components/AppMenu'
@@ -12,6 +12,7 @@ import styles from '../styles/RifaSetup.module.css'
 type CsvParticipant = { nombre?: string; equipo?: string; apodo?: string; handicap?: string | number }
 
 const Rifa: NextPage = () => {
+  const router = useRouter()
   const dispatch = useAppDispatch()
   const [participants, setParticipants] = useState<Participant[]>([])
   const [message, setMessage] = useState('Selecciona el archivo oficial de participantes para la rifa.')
@@ -49,7 +50,7 @@ const Rifa: NextPage = () => {
       <span>{message}</span>
       <label className={styles.upload}>Cargar archivo CSV<input type="file" accept=".csv,text/csv" onChange={loadFile} /></label>
       <small>Columnas requeridas: nombre, equipo, apodo y handicap.</small>
-      {participants.length > 0 && <Link href="/raffle" className={styles.start}>Iniciar rifa →</Link>}
+      <button type="button" className={styles.start} disabled={!participants.length} onClick={() => router.push('/raffle')}>Iniciar rifa →</button>
     </section>
   </main>
 }
