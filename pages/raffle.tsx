@@ -47,11 +47,24 @@ const Raffle: NextPage = () => {
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [settings, setSettings] = useState<RaffleSettings>(defaults)
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const raffleAudioRef = useRef<HTMLAudioElement | null>(null)
   const startedRef = useRef(false)
 
   const stop = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current)
     timeoutRef.current = null
+    if (raffleAudioRef.current) {
+      raffleAudioRef.current.pause()
+      raffleAudioRef.current.currentTime = 0
+      raffleAudioRef.current = null
+    }
+  }
+
+  const playRaffleSound = () => {
+    const audio = new Audio('/audio/rifa-suspenso.mp3')
+    audio.volume = .72
+    raffleAudioRef.current = audio
+    audio.play().catch(() => { raffleAudioRef.current = null })
   }
 
   const eligible = () => {
@@ -68,6 +81,7 @@ const Raffle: NextPage = () => {
     const target = 26
     let step = 0
     setWinner(null); setRemaining(pool.length); setDrawing(true); setSlow(false)
+    playRaffleSound()
 
     const advance = () => {
       setCurrent(shuffled[step % shuffled.length])
