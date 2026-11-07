@@ -5,6 +5,8 @@ import { useRouter } from 'next/router'
 import AppMenu from '../components/AppMenu'
 import React, { useEffect, useMemo, useState } from 'react'
 import Papa from 'papaparse'
+import { jsPDF } from 'jspdf'
+import autoTable from 'jspdf-autotable'
 import styles from '../styles/Scores.module.css'
 
 const STORAGE_KEY = 'intergrupos-2026-ceremony'
@@ -22,6 +24,7 @@ const surname = (name: string) => {
 }
 const sumNet = (team: Team) => team.players.reduce((sum, player) => sum + (playerNet(player) ?? 0), 0)
 const complete = (team: Team) => team.players.length === 12 && team.players.every((player) => player.gross !== '')
+const bestNet = (team: Team) => Math.min(...team.players.map(playerNet).filter((value): value is number => value !== null))
 const normalizedTeamName = (name: string) => name.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-zA-Z0-9]/g, '').toUpperCase()
 const TEAM_LOGOS: Record<string, string> = {
   JAGUARES: '/img/team-logos/LOGO_JAGUARES.png',
@@ -128,6 +131,58 @@ const Scores: NextPage = () => {
     return Number(a.averageHcpi || Infinity) - Number(b.averageHcpi || Infinity)
   }), [teams])
   const needsManualTie = ranking.some((team, index) => index > 0 && sumNet(team) === sumNet(ranking[index - 1]) && sumNet(team) !== Math.min(...ranking.map(sumNet)) && Number(team.averageHcpi) === Number(ranking[index - 1].averageHcpi))
+  const downloadCsv = (filename: string, fields: string[], rows: Array<Record<string, string | number>>) => {
+    const csv = `\uFEFF${Papa.unparse({ fields, data: rows })}`
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }))
+    link.download = filename
+    link.click()
+    window.setTimeout(() => URL.revokeObjectURL(link.href), 1000)
+  }
+  const makePdf = (filename: string, title: string, subtitle: string, columns: string[], rows: Array<Array<string | number>>) => {
+    const document = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'letter' })
+    const pageWidth = document.internal.pageSize.getWidth()
+    document.setFillColor(4, 29, 18)
+    document.rect(0, 0, pageWidth, 27, 'F')
+    document.setTextColor(244, 235, 202)
+    document.setFont('helvetica', 'bold')
+    document.setFontSize(22)
+    document.text('TORNEO INTERGRUPOS 2026', 14, 13)
+    document.setFontSize(10)
+    document.setTextColor(224, 193, 98)
+    document.text(subtitle.toUpperCase(), 14, 21)
+    document.setTextColor(20, 43, 29)
+    document.setFontSize(16)
+    document.text(title, 14, 36)
+    autoTable(document, {
+      head: [columns], body: rows, startY: 41, theme: 'grid', margin: { left: 14, right: 14, bottom: 15 },
+      styles: { font: 'helvetica', fontStyle: 'bold', fontSize: 10, textColor: [12, 26, 16], cellPadding: 2.6, lineColor: [49, 83, 58], lineWidth: .15, halign: 'center' },
+      headStyles: { fillColor: [3, 17, 11], textColor: [255, 255, 255], fontSize: 10.5 },
+      alternateRowStyles: { fillColor: [24, 174, 219] },
+      columnStyles: { 0: { cellWidth: 20 }, 1: { halign: 'left' } },
+      didDrawPage: (data) => {
+        document.setFontSize(8)
+        document.setTextColor(66, 86, 71)
+        document.text(`Página ${data.pageNumber}`, pageWidth - 27, document.internal.pageSize.getHeight() - 7)
+      },
+    })
+    document.save(filename)
+  }
+  const exportResults = () => {
+    if (!ranking.length) { showNotice('Captura al menos un equipo completo antes de imprimir resultados.'); return }
+    const teamFields = ['Posición', 'Equipo', 'Score neto', 'Mejor score neto', 'HCPI promedio']
+    const teamRows = ranking.map((team, index) => ({
+      Posición: index + 1, Equipo: team.name, 'Score neto': sumNet(team), 'Mejor score neto': bestNet(team), 'HCPI promedio': team.averageHcpi || '—',
+    }))
+    const players = ranking.flatMap((team) => team.players.map((player) => ({ player, team }))).filter(({ player }) => playerNet(player) !== null).sort((a, b) => (playerNet(a.player) as number) - (playerNet(b.player) as number) || a.player.phcp - b.player.phcp || a.player.name.localeCompare(b.player.name, 'es'))
+    const playerFields = ['Posición', 'Jugador', 'Score neto', 'Equipo', 'PHCP']
+    const playerRows = players.map(({ player, team }, index) => ({ Posición: index + 1, Jugador: player.name, 'Score neto': playerNet(player) as number, Equipo: team.name, PHCP: player.phcp }))
+    makePdf('resultados-equipos-intergrupos-2026.pdf', 'Resultados por equipos', 'Clasificación oficial y criterios de desempate', teamFields, teamRows.map((row) => teamFields.map((field) => row[field as keyof typeof row])))
+    makePdf('resultados-jugadores-intergrupos-2026.pdf', 'Clasificación general de jugadores', 'Desempate por PHCP menor', playerFields, playerRows.map((row) => playerFields.map((field) => row[field as keyof typeof row])))
+    downloadCsv('resultados-equipos-intergrupos-2026.csv', teamFields, teamRows)
+    downloadCsv('resultados-jugadores-intergrupos-2026.csv', playerFields, playerRows)
+    showNotice('Se generaron 2 PDFs y 2 CSVs en las descargas de esta computadora.')
+  }
   const clearCapture = () => {
     if (!window.confirm('¿Borrar toda la captura de scores? Se conservarán los equipos, jugadores, PHCP y HCPI promedio.')) return
     setTeams((current) => current.map((team) => ({ ...team, presented: false, players: team.players.map((player) => ({ ...player, gross: '' })) })))
@@ -148,7 +203,7 @@ const Scores: NextPage = () => {
     {notice && <div className={styles.notice}>{notice}</div>}
     {view === 'setup' && <section className={styles.panel}><div className={styles.sectionTitle}><div><p>PREPARACIÓN</p><h2>Jugadores y criterios</h2><span>Importa la lista oficial; el PHCP queda protegido para calcular el neto.</span></div><label className={styles.importButton}>Importar CSV<input type="file" accept=".csv,text/csv" onChange={(event) => { const file = event.target.files?.[0]; if (file) importCsv(file); event.target.value = '' }} /></label></div><div className={styles.rules}><b>Score neto de equipo = suma de los 12 netos.</b><span>Empate por 1.º: netos individuales más bajos, en orden. Del 2.º al 15.º: HCPI promedio menor. Un empate persistente se marca para decisión manual.</span></div><div className={styles.configTeams}>{teams.map((team) => <article key={team.id}><input value={team.name} onChange={(event) => updateTeam(team.id, (current) => ({ ...current, name: event.target.value }))} aria-label="Nombre del equipo" /><label>HCPI promedio<input type="number" step="0.1" min="0" value={team.averageHcpi} onChange={(event) => updateTeam(team.id, (current) => ({ ...current, averageHcpi: event.target.value }))} placeholder="Ej. 12.4" /></label><small>{team.players.length} jugadores · {team.players.filter((player) => player.phcp !== 0).length} PHCP cargados</small></article>)}</div><div className={styles.bottomActions}><button onClick={save}>Guardar configuración</button><button className={styles.primary} onClick={() => setView('capture')}>Abrir ceremonia →</button></div></section>}
     {view === 'capture' && <section className={styles.ceremony}><aside className={styles.control}><p>ORDEN DE PRESENTACIÓN</p><h2>{teams.filter((team) => !team.presented).length} por presentar</h2><button className={styles.draw} onClick={chooseTeam}>✦ Elegir equipo al azar</button><div className={styles.teamList}>{teams.map((team) => <button key={team.id} onClick={() => setActiveId(team.id)} className={team.id === active.id ? styles.activeTeam : ''}>{team.presented ? '✓ ' : ''}{team.name}<b>{complete(team) ? 'Listo' : 'pendiente'}</b></button>)}</div><button onClick={save}>Guardar captura</button></aside><section className={styles.capturePanel}><div className={styles.captureHead}><div><p>EQUIPO EN ESCENARIO</p><h2>{active.name}</h2><span>HCPI promedio: {active.averageHcpi || 'sin capturar'}</span></div><div className={styles.total}><span>NETO DE EQUIPO</span><strong>{complete(active) ? sumNet(active) : '—'}</strong><small>{active.players.filter((player) => player.gross !== '').length}/12 scores</small></div></div><p className={styles.scoreHint}>{entryMessage}</p><div className={styles.scoreTable}><div className={styles.scoreHead}><span>JUGADOR · ORDEN ALFABÉTICO</span><span>GROSS</span><span>PHCP</span><span>NETO</span></div>{sortedPlayers.map((player, index) => { const net = playerNet(player); const best = complete(active) && net === lowestNet; const displayedScore = scoreDrafts[player.id] ?? player.gross; return <div key={player.id} className={`${styles.scoreRow} ${best ? styles.best : ''}`}><span>{player.name}{best && <em>MEJOR NETO</em>}</span><input data-score-position={index} type="text" inputMode="numeric" autoComplete="off" value={displayedScore} onChange={(event) => { if (/^\d*$/.test(event.target.value)) setScoreDrafts((current) => ({ ...current, [player.id]: event.target.value })) }} onKeyDown={(event) => { if (event.key === 'Enter') { event.preventDefault(); commitScore(player, index) } }} placeholder="—" aria-label={`Gross de ${player.name}`} /><b>{player.phcp}</b><strong>{net ?? '—'}</strong></div>})}</div><footer><button onClick={() => { setReveal(true); fanfare() }}>Presentar en pantalla</button>{complete(active) && <button className={styles.primary} onClick={() => { setReveal(true); fanfare(true) }}>✦ Revelar mejor neto</button>}<button onClick={() => setView('results')}>Ver clasificación</button></footer></section></section>}
-    {view === 'results' && <section className={styles.panel}><div className={styles.sectionTitle}><div><p>CLASIFICACIÓN FINAL</p><h2>Tabla de resultados</h2><span>{completeTeams === teams.length ? 'Los equipos han sido capturados.' : `Faltan ${teams.length - completeTeams} equipos por completar.`}</span></div><div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 9 }}><button className={styles.primary} disabled={!ranking.length} onClick={() => { setFinale(true); playChampionFanfare() }}>✦ Fanfarria final</button><button style={{ color: '#ffd9cc', borderColor: '#c96b4f', background: '#762f23' }} onClick={clearCapture}>Borrar captura</button></div></div>{needsManualTie && <div className={styles.warning}>Hay un empate con igual score neto y HCPI promedio. Requiere resolución manual.</div>}<div className={styles.results}><div><span>POS.</span><span>EQUIPO</span><span>NETO EQUIPO</span><span>HCPI PROM.</span></div>{ranking.map((team, index) => <div key={team.id} className={index === 0 ? styles.champion : ''}><b>{index + 1}º</b><span>{team.name}</span><strong>{sumNet(team)}</strong><span>{team.averageHcpi || '—'}</span></div>)}</div></section>}
+    {view === 'results' && <section className={styles.panel}><div className={styles.sectionTitle}><div><p>CLASIFICACIÓN FINAL</p><h2>Tabla de resultados</h2><span>{completeTeams === teams.length ? 'Los equipos han sido capturados.' : `Faltan ${teams.length - completeTeams} equipos por completar.`}</span></div><div className={styles.resultActions}><button className={styles.primary} disabled={!ranking.length} onClick={() => { setFinale(true); playChampionFanfare() }}>✦ Fanfarria final</button><button className={styles.printResults} disabled={!ranking.length} onClick={exportResults}>Imprimir resultados</button><button className={styles.clearResults} onClick={clearCapture}>Borrar captura</button></div></div>{needsManualTie && <div className={styles.warning}>Hay un empate con igual score neto y HCPI promedio. Requiere resolución manual.</div>}<div className={styles.results}><div><span>POS.</span><span>EQUIPO</span><span>NETO EQUIPO</span><span>HCPI PROM.</span></div>{ranking.map((team, index) => <div key={team.id} className={index === 0 ? styles.champion : ''}><b>{index + 1}º</b><span>{team.name}</span><strong>{sumNet(team)}</strong><span>{team.averageHcpi || '—'}</span></div>)}</div></section>}
     {reveal && <div className={styles.reveal} onClick={() => setReveal(false)} role="dialog" aria-label={`Presentación de ${active.name}`}>
       <div className={styles.revealRays} /><div className={styles.revealSparkles}>✦ ✧ ✦</div>
       <p>TORNEO INTERGRUPOS 2026</p><div className={styles.teamLogoStage}>{teamLogo(active.name) ? <Image src={teamLogo(active.name) as string} alt={`Logo ${active.name}`} width={310} height={310} unoptimized /> : <span>{active.name.slice(0, 1)}</span>}</div>

@@ -30,6 +30,9 @@
 .configTeams small{display:block;margin-top:10px;color:#9db39f;font-size:.7rem}
 .bottomActions{display:flex;justify-content:flex-end;gap:10px;margin-top:25px}
 .primary{color:#172315!important;background:#dfbf60!important;border-color:#f5d97c!important}
+.resultActions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px}
+.printResults{color:#f7e6a4!important;background:#24563a!important;border-color:#d7b75c!important}
+.clearResults{color:#ffd9cc!important;border-color:#c96b4f!important;background:#762f23!important}
 .ceremony{max-width:1320px;display:grid;grid-template-columns:274px minmax(0,1fr);gap:22px;margin:28px auto;padding:0 20px}
 .control,.capturePanel{border:1px solid #bfa45266;border-radius:15px;background:linear-gradient(145deg,#102e1d,#07190f);box-shadow:0 14px 38px #0008}
 .control{padding:20px 14px}
