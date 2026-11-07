@@ -64,7 +64,13 @@ const Raffle: NextPage = () => {
     const audio = new Audio('/audio/rifa-suspenso.mp3')
     audio.volume = .72
     raffleAudioRef.current = audio
-    audio.play().catch(() => { raffleAudioRef.current = null })
+    audio.addEventListener('loadedmetadata', () => {
+      if (raffleAudioRef.current !== audio) return
+      // Preserve the composed finale: a 7-second file plays from second 2,
+      // while a 5-second (or shorter) file plays in full.
+      audio.currentTime = Math.max(0, audio.duration - 5)
+      audio.play().catch(() => { if (raffleAudioRef.current === audio) raffleAudioRef.current = null })
+    }, { once: true })
   }
 
   const eligible = () => {
