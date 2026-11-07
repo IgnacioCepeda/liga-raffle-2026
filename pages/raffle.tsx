@@ -100,7 +100,7 @@ const Raffle: NextPage = () => {
       const inFinalPhase = step >= slowPoint
       setSlow(inFinalPhase)
       const progress = inFinalPhase ? (step - slowPoint) / Math.max(1, target - slowPoint) : 0
-      timeoutRef.current = setTimeout(advance, inFinalPhase ? 120 + Math.round(progress * 500) : 48)
+      timeoutRef.current = setTimeout(advance, inFinalPhase ? 90 + Math.round(progress * 400) : 48)
     }
     advance()
   }
