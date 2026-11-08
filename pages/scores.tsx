@@ -29,7 +29,7 @@ const normalizedTeamName = (name: string) => name.normalize('NFD').replace(/[\u0
 const TEAM_LOGOS: Record<string, string> = {
   JAGUARES: '/img/team-logos/LOGO_JAGUARES.png',
   RESTODELMUNDO: '/img/team-logos/LOGO_RESTO DEL MUNDO.jpg',
-  LALIGAJR: '/img/team-logos/LOGO_LALIGAJR.jpeg',
+  LALIGAJR: '/img/team-logos/LOGO_LALIGAJR-2026.jpeg',
   EARLYGOLF: '/img/team-logos/LOGO_EARLYGOLF.jpeg',
   CHAROLASTRAS: '/img/team-logos/LOGO_CHAROLASTRAS.jpeg',
   PERIODIQUEROS: '/img/team-logos/LOGO_PERIODIQUEROS.jpeg',
