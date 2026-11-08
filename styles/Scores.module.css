@@ -33,6 +33,11 @@
 .resultActions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:9px}
 .printResults{color:#f7e6a4!important;background:#24563a!important;border-color:#d7b75c!important}
 .clearResults{color:#ffd9cc!important;border-color:#c96b4f!important;background:#762f23!important}
+.downloadPanel{display:flex;flex-wrap:wrap;align-items:center;gap:9px;margin-top:20px;padding:14px 16px;color:#d7e3d2;border:1px solid #bfa45266;border-radius:9px;background:#143422}
+.downloadPanel strong{color:#f1d57b}
+.downloadPanel span{font-size:.78rem}
+.downloadPanel div{display:flex;flex-wrap:wrap;gap:8px;margin-left:auto}
+.downloadPanel button{padding:9px 12px;color:#0f2115;border:1px solid #efd57f;border-radius:7px;background:#e1c365;cursor:pointer;font:800 .78rem inherit}
 .ceremony{max-width:1320px;display:grid;grid-template-columns:274px minmax(0,1fr);gap:22px;margin:28px auto;padding:0 20px}
 .control,.capturePanel{border:1px solid #bfa45266;border-radius:15px;background:linear-gradient(145deg,#102e1d,#07190f);box-shadow:0 14px 38px #0008}
 .control{padding:20px 14px}
